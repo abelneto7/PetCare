@@ -24,6 +24,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Tutores" asp-action="Index">Tutores</a>
+                        </li>
                     </ul>
 
                     <ul class="navbar-nav ms-auto align-items-sm-center">
@@ -36,6 +39,7 @@
                         </li>
                         <li class="nav-item">
                             <form method="post" action="/Auth/Logout" class="d-inline">
+                                @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">Sair</button>
                             </form>
                         </li>
@@ -57,6 +61,30 @@
 
     <div class="container">
         <main role="main" class="pb-3">
+
+            @* Alertas globais *@
+            @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        }
+            @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        }
+            @if (TempData["Info"] != null)
+        {
+            <div class="alert alert-secondary alert-dismissible fade show shadow-sm" role="alert">
+                @TempData["Info"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        }
+
             @RenderBody()
         </main>
     </div>
@@ -70,6 +98,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/phone-mask.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

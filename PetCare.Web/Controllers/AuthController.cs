@@ -27,6 +27,7 @@ namespace PetCare.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cadastro(string nome, string email, string senha)
         {
             if (string.IsNullOrWhiteSpace(nome) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senha))
@@ -57,6 +58,7 @@ namespace PetCare.Web.Controllers
             _db.Usuarios.Add(usuario);
             await _db.SaveChangesAsync();
 
+            TempData["Success"] = "Conta criada com sucesso. Agora você pode entrar.";
             return RedirectToAction(nameof(Login));
         }
 
@@ -67,6 +69,7 @@ namespace PetCare.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string senha)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senha))
@@ -110,13 +113,17 @@ namespace PetCare.Web.Controllers
                     IssuedUtc = DateTimeOffset.UtcNow
                 });
 
+            TempData["Success"] = $"Bem-vindo, {usuario.Nome}!";
             return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            TempData["Info"] = "Você saiu do sistema.";
             return RedirectToAction(nameof(Login));
         }
     }
