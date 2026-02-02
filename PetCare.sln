@@ -5,6 +5,12 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare.Web", "PetCare.Web\PetCare.Web.csproj", "{4B819477-04AA-46B8-82DB-5BA64CE7A662}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare.Domain", "PetCare.Domain\PetCare.Domain.csproj", "{DE6371A6-5AB7-47FF-A948-5955A2D11125}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare.Application", "PetCare.Application\PetCare.Application.csproj", "{5349FB13-C77D-4D47-9983-6F6A350DDF32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetCare.Infrastructure", "PetCare.Infrastructure\PetCare.Infrastructure.csproj", "{E4BB408A-DDA8-4D61-94D1-C2BC2E52B317}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{4B819477-04AA-46B8-82DB-5BA64CE7A662}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B819477-04AA-46B8-82DB-5BA64CE7A662}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B819477-04AA-46B8-82DB-5BA64CE7A662}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE6371A6-5AB7-47FF-A948-5955A2D11125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE6371A6-5AB7-47FF-A948-5955A2D11125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE6371A6-5AB7-47FF-A948-5955A2D11125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE6371A6-5AB7-47FF-A948-5955A2D11125}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5349FB13-C77D-4D47-9983-6F6A350DDF32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5349FB13-C77D-4D47-9983-6F6A350DDF32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5349FB13-C77D-4D47-9983-6F6A350DDF32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5349FB13-C77D-4D47-9983-6F6A350DDF32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4BB408A-DDA8-4D61-94D1-C2BC2E52B317}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4BB408A-DDA8-4D61-94D1-C2BC2E52B317}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4BB408A-DDA8-4D61-94D1-C2BC2E52B317}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4BB408A-DDA8-4D61-94D1-C2BC2E52B317}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
