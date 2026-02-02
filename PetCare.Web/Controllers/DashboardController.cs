@@ -21,14 +21,12 @@ namespace PetCare.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var hoje = DateTime.UtcNow.Date;
-
-            // Nota: Para otimização futura, adicionar métodos CountAsync nos repositórios.
             var tutores = await _tutorRepository.ObterTodosAsync();
             var pets = await _petRepository.ObterTodosAsync();
             var vacinasAtrasadasLista = await _vacinaRepository.ObterAtrasadasAsync();
 
             var vacinasAtrasadasVm = vacinasAtrasadasLista
-                .Take(20) // Mantendo a lógica visual de limitar a 20
+                .Take(20) 
                 .Select(v => new VacinaAtrasadaVm
                 {
                     RegistroId = v.Id,
