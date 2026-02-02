@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h3 class="mb-1">Dashboard</h3>
+        <div class="text-muted">Visão geral do PetCare+ 🐾</div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Total de tutores</div>
+                <div class="display-6 fw-semibold">—</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Total de pets</div>
+                <div class="display-6 fw-semibold">—</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Vacinas atrasadas</div>
+                <div class="display-6 fw-semibold">—</div>
+                <div class="small text-muted mt-1">Proximas doses vencidas</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="mb-3">Acesso rápido</h6>
+
+                <div class="d-grid gap-2">
+                    <a class="btn btn-outline-secondary" href="#">Tutores</a>
+                    <a class="btn btn-outline-secondary" href="#">Pets</a>
+                    <a class="btn btn-outline-secondary" href="#">Vacinas</a>
+                </div>
+
+                <div class="text-muted small mt-3">
+                    Atalhos serão conectados quando criarmos os CRUDs.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="mb-0">Vacinas atrasadas</h6>
+                    <span class="badge text-bg-light">Em breve: dados reais</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr class="text-muted">
+                                <th>Pet</th>
+                                <th>Tutor</th>
+                                <th>Vacina</th>
+                                <th>Próxima dose</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-muted">
+                                    Nenhum dado ainda (vamos popular isso no próximo tópico).
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="small text-muted mt-3">
+                    Regra: atraso quando <code>ProximaDose</code> &lt; data atual.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

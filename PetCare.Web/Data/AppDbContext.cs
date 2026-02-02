@@ -11,6 +11,8 @@ namespace PetCare.Web.Data
 
         public DbSet<Usuario> Usuarios => Set<Usuario>();
 
+        public DbSet<Tutor> Tutores => Set<Tutor>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

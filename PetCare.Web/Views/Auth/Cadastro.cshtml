@@ -28,6 +28,8 @@
                         }
 
                         <form method="post" class="needs-validation" novalidate>
+                            @Html.AntiForgeryToken()
+
                             <div class="mb-3">
                                 <label class="form-label">Nome</label>
                                 <input name="nome" class="form-control" placeholder="Seu nome" required autofocus />
@@ -46,12 +48,8 @@
                             </div>
 
                             <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-dark">
-                                    Cadastrar
-                                </button>
-                                <a class="btn btn-outline-secondary" href="/Auth/Login">
-                                    Já tenho conta
-                                </a>
+                                <button type="submit" class="btn btn-dark">Cadastrar</button>
+                                <a class="btn btn-outline-secondary" href="/Auth/Login">Já tenho conta</a>
                             </div>
                         </form>
 
