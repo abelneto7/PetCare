@@ -1,0 +1,69 @@
+@model List<PetCare.Web.Models.Tutor>
+@{
+    ViewData["Title"] = "Tutores";
+    var q = ViewBag.Query as string;
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="mb-1">Tutores</h3>
+        <div class="text-muted">Gerencie os tutores cadastrados</div>
+    </div>
+    <a class="btn btn-dark" asp-action="Create">Novo tutor</a>
+</div>
+
+<form method="get" class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-12 col-md-8">
+                <label class="form-label">Buscar</label>
+                <input name="q" value="@q" class="form-control" placeholder="Nome, telefone ou email" />
+            </div>
+            <div class="col-12 col-md-4 d-grid">
+                <button type="submit" class="btn btn-outline-secondary">Pesquisar</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                        <th class="text-end" style="width: 220px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4" class="text-muted p-4">
+                                Nenhum tutor encontrado.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@item.Nome</td>
+                                <td>@item.Telefone</td>
+                                <td>@(string.IsNullOrWhiteSpace(item.Email) ? "-" : item.Email)</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
