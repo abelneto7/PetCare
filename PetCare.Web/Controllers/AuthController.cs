@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using System.Security.Claims;
 
 namespace PetCare.Web.Controllers
 {
+    [AllowAnonymous]
     public class AuthController : Controller
     {
         private readonly AppDbContext _db;
@@ -23,6 +25,9 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public IActionResult Cadastro()
         {
+            if (User?.Identity?.IsAuthenticated == true)
+                return RedirectToAction("Index", "Dashboard");
+
             return View();
         }
 
@@ -65,6 +70,9 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (User?.Identity?.IsAuthenticated == true)
+                return RedirectToAction("Index", "Dashboard");
+
             return View();
         }
 
@@ -114,7 +122,7 @@ namespace PetCare.Web.Controllers
                 });
 
             TempData["Success"] = $"Bem-vindo, {usuario.Nome}!";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost]

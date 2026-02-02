@@ -20,5 +20,7 @@ namespace PetCare.Web.Models
         public int TutorId { get; set; }
 
         public Tutor? Tutor { get; set; }
+
+        public ICollection<RegistroVacina> Vacinas { get; set; } = new List<RegistroVacina>();
     }
 }

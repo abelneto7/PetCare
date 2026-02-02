@@ -43,7 +43,7 @@
                             <th>Espécie</th>
                             <th>Raça</th>
                             <th>Tutor</th>
-                            <th class="text-end" style="width: 180px;">Ações</th>
+                            <th class="text-end" style="width: 260px;">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,6 +55,7 @@
                             <td>@(string.IsNullOrWhiteSpace(item.Raca) ? "-" : item.Raca)</td>
                             <td>@(item.Tutor?.Nome ?? "-")</td>
                             <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" href="/pets/@item.Id/vacinas">Vacinas</a>
                                 <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
                                 <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
                             </td>

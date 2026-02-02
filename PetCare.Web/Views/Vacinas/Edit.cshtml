@@ -1,0 +1,77 @@
+@model PetCare.Web.Models.RegistroVacina
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Editar vacina";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="mb-1">Editar vacina</h3>
+        <div class="text-muted">Atualize os dados do registro</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="javascript:history.back()">Voltar</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+            <div class="alert alert-danger py-2" role="alert">
+                @Html.ValidationSummary(excludePropertyErrors: true)
+            </div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label">Pet</label>
+                <select asp-for="PetId" class="form-select" asp-items="(SelectList)ViewBag.Pets">
+                    <option value="">Selecione...</option>
+                </select>
+                <span asp-validation-for="PetId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nome da vacina</label>
+                <input asp-for="NomeVacina" class="form-control" />
+                <span asp-validation-for="NomeVacina" class="text-danger"></span>
+            </div>
+
+            <div class="row g-2">
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Data de aplicação</label>
+                        <input asp-for="DataAplicacao" class="form-control" type="date" />
+                        <span asp-validation-for="DataAplicacao" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Intervalo (dias)</label>
+                        <input asp-for="IntervaloDias" class="form-control" type="number" min="1" max="3650" />
+                        <div class="form-text">A próxima dose será recalculada ao salvar.</div>
+                        <span asp-validation-for="IntervaloDias" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Observação (opcional)</label>
+                <textarea asp-for="Observacao" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Observacao" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid d-md-flex gap-2">
+                <button type="submit" class="btn btn-dark">Salvar</button>
+                <a class="btn btn-outline-secondary" href="javascript:history.back()">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

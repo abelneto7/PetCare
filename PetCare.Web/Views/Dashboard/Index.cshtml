@@ -1,20 +1,36 @@
-﻿@{
+﻿@model PetCare.Web.Controllers.DashboardController.DashboardVm
+
+@{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="d-flex align-items-center justify-content-between mb-4">
+<div class="d-flex align-items-center justify-content-between mb-3">
     <div>
         <h3 class="mb-1">Dashboard</h3>
-        <div class="text-muted">Visão geral do PetCare+ 🐾</div>
+        <div class="text-muted">Visão geral do sistema</div>
+    </div>
+
+    <div class="d-grid d-md-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-controller="Tutores" asp-action="Index">Tutores</a>
+        <a class="btn btn-outline-secondary" asp-controller="Pets" asp-action="Index">Pets</a>
+        <a class="btn btn-dark" asp-controller="Vacinas" asp-action="Create">Registrar vacina</a>
     </div>
 </div>
 
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-3">
     <div class="col-12 col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
-                <div class="text-muted small">Total de tutores</div>
-                <div class="display-6 fw-semibold">—</div>
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <div class="text-muted">Total de tutores</div>
+                        <div class="fs-3 fw-semibold">@Model.TotalTutores</div>
+                    </div>
+                    <div class="fs-3">👤</div>
+                </div>
+                <div class="mt-3">
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Tutores" asp-action="Index">Ver tutores</a>
+                </div>
             </div>
         </div>
     </div>
@@ -22,8 +38,16 @@
     <div class="col-12 col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
-                <div class="text-muted small">Total de pets</div>
-                <div class="display-6 fw-semibold">—</div>
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <div class="text-muted">Total de pets</div>
+                        <div class="fs-3 fw-semibold">@Model.TotalPets</div>
+                    </div>
+                    <div class="fs-3">🐾</div>
+                </div>
+                <div class="mt-3">
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Pets" asp-action="Index">Ver pets</a>
+                </div>
             </div>
         </div>
     </div>
@@ -31,66 +55,72 @@
     <div class="col-12 col-md-4">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
-                <div class="text-muted small">Vacinas atrasadas</div>
-                <div class="display-6 fw-semibold">—</div>
-                <div class="small text-muted mt-1">Proximas doses vencidas</div>
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <div class="text-muted">Vacinas atrasadas</div>
+                        <div class="fs-3 fw-semibold">@Model.TotalVacinasAtrasadas</div>
+                    </div>
+                    <div class="fs-3">💉</div>
+                </div>
+
+                <div class="mt-3">
+                    <span class="badge bg-danger text-white">Atenção</span>
+                    <small class="text-muted ms-2">Próxima dose &lt; hoje</small>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-3 mb-4">
-    <div class="col-12 col-lg-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <h6 class="mb-3">Acesso rápido</h6>
-
-                <div class="d-grid gap-2">
-                    <a class="btn btn-outline-secondary" href="#">Tutores</a>
-                    <a class="btn btn-outline-secondary" href="#">Pets</a>
-                    <a class="btn btn-outline-secondary" href="#">Vacinas</a>
-                </div>
-
-                <div class="text-muted small mt-3">
-                    Atalhos serão conectados quando criarmos os CRUDs.
-                </div>
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <div>
+                <h5 class="mb-0">Vacinas atrasadas</h5>
+                <div class="text-muted">Lista das próximas doses vencidas</div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-lg-8">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="mb-0">Vacinas atrasadas</h6>
-                    <span class="badge text-bg-light">Em breve: dados reais</span>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle mb-0">
-                        <thead>
-                            <tr class="text-muted">
-                                <th>Pet</th>
-                                <th>Tutor</th>
-                                <th>Vacina</th>
-                                <th>Próxima dose</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="5" class="text-muted">
-                                    Nenhum dado ainda (vamos popular isso no próximo tópico).
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="small text-muted mt-3">
-                    Regra: atraso quando <code>ProximaDose</code> &lt; data atual.
-                </div>
-            </div>
+        @if (Model.VacinasAtrasadas.Count == 0)
+        {
+        <div class="text-muted">Nenhuma vacina atrasada no momento.</div>
+        }
+        else
+        {
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr class="text-muted">
+                        <th>Pet</th>
+                        <th>Tutor</th>
+                        <th>Vacina</th>
+                        <th>Próxima dose</th>
+                        <th>Atraso</th>
+                        <th class="text-end" style="width: 220px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.VacinasAtrasadas)
+                        {
+                    <tr class="table-danger">
+                        <td class="fw-semibold">@item.PetNome</td>
+                        <td>@item.TutorNome</td>
+                        <td>@item.NomeVacina</td>
+                        <td>@item.ProximaDose.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <span class="badge bg-danger text-white">
+                                @item.DiasAtraso dia(s)
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" href="/pets/@item.PetId/vacinas">Ver vacinas</a>
+                            <a class="btn btn-sm btn-dark" asp-controller="Vacinas" asp-action="Create" asp-route-petId="@item.PetId">Registrar</a>
+                        </td>
+                    </tr>
+                        }
+                </tbody>
+            </table>
         </div>
+        }
     </div>
 </div>

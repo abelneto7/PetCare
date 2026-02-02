@@ -1,0 +1,56 @@
+﻿@model PetCare.Web.Models.RegistroVacina
+
+@{
+    ViewData["Title"] = "Excluir vacina";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="mb-1">Excluir vacina</h3>
+        <div class="text-muted">Confirme a exclusão</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="javascript:history.back()">Voltar</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+
+        <div class="alert alert-warning d-flex align-items-start gap-2 mb-4" role="alert">
+            <div class="fs-5">⚠️</div>
+            <div>
+                <div class="fw-semibold">Atenção</div>
+                <div>
+                    Você tem certeza que deseja excluir este registro de vacina?
+                    <span class="text-muted">Esta ação não pode ser desfeita.</span>
+                </div>
+            </div>
+        </div>
+
+        <dl class="row mb-4">
+            <dt class="col-sm-3 text-muted">Pet</dt>
+            <dd class="col-sm-9">@Model.Pet?.Nome</dd>
+
+            <dt class="col-sm-3 text-muted">Vacina</dt>
+            <dd class="col-sm-9">@Model.NomeVacina</dd>
+
+            <dt class="col-sm-3 text-muted">Aplicação</dt>
+            <dd class="col-sm-9">@Model.DataAplicacao.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3 text-muted">Próxima dose</dt>
+            <dd class="col-sm-9">@Model.ProximaDose.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3 text-muted">Observação</dt>
+            <dd class="col-sm-9">@((string.IsNullOrWhiteSpace(Model.Observacao)) ? "-" : Model.Observacao)</dd>
+        </dl>
+
+        <form asp-action="DeleteConfirmed" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+
+            <div class="d-grid d-md-flex gap-2">
+                <button type="submit" class="btn btn-danger">Excluir</button>
+                <a class="btn btn-outline-secondary" href="javascript:history.back()">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

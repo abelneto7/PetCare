@@ -12,6 +12,7 @@ namespace PetCare.Web.Data
         public DbSet<Usuario> Usuarios => Set<Usuario>();
         public DbSet<Tutor> Tutores => Set<Tutor>();
         public DbSet<Pet> Pets => Set<Pet>();
+        public DbSet<RegistroVacina> RegistrosVacinas => Set<RegistroVacina>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +55,24 @@ namespace PetCare.Web.Data
                       .WithMany()
                       .HasForeignKey(p => p.TutorId)
                       .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<RegistroVacina>(entity =>
+            {
+                entity.Property(v => v.NomeVacina).IsRequired().HasMaxLength(150);
+                entity.Property(v => v.Observacao).HasMaxLength(500);
+
+                entity.Property(v => v.DataAplicacao).IsRequired();
+                entity.Property(v => v.IntervaloDias).IsRequired();
+                entity.Property(v => v.ProximaDose).IsRequired();
+
+                entity.Property(v => v.CreatedAt).IsRequired();
+                entity.Property(v => v.UpdatedAt).IsRequired(false);
+
+                entity.HasOne(v => v.Pet)
+                    .WithMany(p => p.Vacinas)
+                    .HasForeignKey(v => v.PetId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
         }
 
