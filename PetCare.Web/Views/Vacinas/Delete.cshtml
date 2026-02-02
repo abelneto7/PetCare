@@ -1,4 +1,4 @@
-Ôªø@model PetCare.Web.Models.RegistroVacina
+@model PetCare.Domain.Entities.RegistroVacina
 
 @{
     ViewData["Title"] = "Excluir vacina";
@@ -7,7 +7,7 @@
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
         <h3 class="mb-1">Excluir vacina</h3>
-        <div class="text-muted">Confirme a exclus√£o</div>
+        <div class="text-muted">Confirme a exclus„o</div>
     </div>
     <a class="btn btn-outline-secondary" href="javascript:history.back()">Voltar</a>
 </div>
@@ -16,12 +16,12 @@
     <div class="card-body">
 
         <div class="alert alert-warning d-flex align-items-start gap-2 mb-4" role="alert">
-            <div class="fs-5">‚ö†Ô∏è</div>
+            <div class="fs-5">??</div>
             <div>
-                <div class="fw-semibold">Aten√ß√£o</div>
+                <div class="fw-semibold">AtenÁ„o</div>
                 <div>
-                    Voc√™ tem certeza que deseja excluir este registro de vacina?
-                    <span class="text-muted">Esta a√ß√£o n√£o pode ser desfeita.</span>
+                    VocÍ tem certeza que deseja excluir este registro de vacina?
+                    <span class="text-muted">Esta aÁ„o n„o pode ser desfeita.</span>
                 </div>
             </div>
         </div>
@@ -33,13 +33,13 @@
             <dt class="col-sm-3 text-muted">Vacina</dt>
             <dd class="col-sm-9">@Model.NomeVacina</dd>
 
-            <dt class="col-sm-3 text-muted">Aplica√ß√£o</dt>
+            <dt class="col-sm-3 text-muted">AplicaÁ„o</dt>
             <dd class="col-sm-9">@Model.DataAplicacao.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3 text-muted">Pr√≥xima dose</dt>
+            <dt class="col-sm-3 text-muted">PrÛxima dose</dt>
             <dd class="col-sm-9">@Model.ProximaDose.ToString("dd/MM/yyyy")</dd>
 
-            <dt class="col-sm-3 text-muted">Observa√ß√£o</dt>
+            <dt class="col-sm-3 text-muted">ObservaÁ„o</dt>
             <dd class="col-sm-9">@((string.IsNullOrWhiteSpace(Model.Observacao)) ? "-" : Model.Observacao)</dd>
         </dl>
 

@@ -1,38 +1,23 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PetCare.Web.Data;
-using PetCare.Web.Models;
+using PetCare.Domain.Entities;
+using PetCare.Domain.Interfaces;
 
 namespace PetCare.Web.Controllers
 {
     [Authorize]
     public class TutoresController : Controller
     {
-        private readonly AppDbContext _db;
+        private readonly ITutorRepository _tutorRepository;
 
-        public TutoresController(AppDbContext db)
+        public TutoresController(ITutorRepository tutorRepository)
         {
-            _db = db;
+            _tutorRepository = tutorRepository;
         }
 
         public async Task<IActionResult> Index(string? q)
         {
-            var query = _db.Tutores.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                q = q.Trim();
-                query = query.Where(t =>
-                    t.Nome.Contains(q) ||
-                    t.Telefone.Contains(q) ||
-                    (t.Email != null && t.Email.Contains(q)));
-            }
-
-            var itens = await query
-                .OrderBy(t => t.Nome)
-                .ToListAsync();
-
+            var itens = await _tutorRepository.ObterTodosAsync(q);
             ViewBag.Query = q;
             return View(itens);
         }
@@ -49,12 +34,11 @@ namespace PetCare.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Verifique os campos do formul·rio.";
+                TempData["Error"] = "Verifique os campos do formul√°rio.";
                 return View(model);
             }
 
-            _db.Tutores.Add(model);
-            await _db.SaveChangesAsync();
+            await _tutorRepository.AdicionarAsync(model);
 
             TempData["Success"] = "Tutor cadastrado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -63,10 +47,10 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var tutor = await _db.Tutores.FindAsync(id);
+            var tutor = await _tutorRepository.ObterPorIdAsync(id);
             if (tutor == null)
             {
-                TempData["Error"] = "Tutor n„o encontrado.";
+                TempData["Error"] = "Tutor n√£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -79,20 +63,20 @@ namespace PetCare.Web.Controllers
         {
             if (id != model.Id)
             {
-                TempData["Error"] = "RequisiÁ„o inv·lida.";
+                TempData["Error"] = "Requisi√ß√£o inv√°lida.";
                 return RedirectToAction(nameof(Index));
             }
 
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Verifique os campos do formul·rio.";
+                TempData["Error"] = "Verifique os campos do formul√°rio.";
                 return View(model);
             }
 
-            var tutor = await _db.Tutores.FindAsync(id);
+            var tutor = await _tutorRepository.ObterPorIdAsync(id);
             if (tutor == null)
             {
-                TempData["Error"] = "Tutor n„o encontrado.";
+                TempData["Error"] = "Tutor n√£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -101,7 +85,7 @@ namespace PetCare.Web.Controllers
             tutor.Email = model.Email;
             tutor.Endereco = model.Endereco;
 
-            await _db.SaveChangesAsync();
+            await _tutorRepository.AtualizarAsync(tutor);
 
             TempData["Success"] = "Tutor atualizado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -110,10 +94,10 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var tutor = await _db.Tutores.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
+            var tutor = await _tutorRepository.ObterPorIdAsync(id);
             if (tutor == null)
             {
-                TempData["Error"] = "Tutor n„o encontrado.";
+                TempData["Error"] = "Tutor n√£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -123,15 +107,14 @@ namespace PetCare.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var tutor = await _db.Tutores.FindAsync(id);
+            var tutor = await _tutorRepository.ObterPorIdAsync(id);
             if (tutor == null)
             {
-                TempData["Error"] = "Tutor n„o encontrado.";
+                TempData["Error"] = "Tutor n√£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
-            _db.Tutores.Remove(tutor);
-            await _db.SaveChangesAsync();
+            await _tutorRepository.RemoverAsync(tutor);
 
             TempData["Success"] = "Tutor removido com sucesso.";
             return RedirectToAction(nameof(Index));

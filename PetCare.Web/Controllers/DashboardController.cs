@@ -1,38 +1,34 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PetCare.Web.Data;
+using PetCare.Domain.Interfaces;
 
 namespace PetCare.Web.Controllers
 {
     [Authorize]
     public class DashboardController : Controller
     {
-        private readonly AppDbContext _db;
+        private readonly ITutorRepository _tutorRepository;
+        private readonly IPetRepository _petRepository;
+        private readonly IVacinaRepository _vacinaRepository;
 
-        public DashboardController(AppDbContext db)
+        public DashboardController(ITutorRepository tutorRepository, IPetRepository petRepository, IVacinaRepository vacinaRepository)
         {
-            _db = db;
+            _tutorRepository = tutorRepository;
+            _petRepository = petRepository;
+            _vacinaRepository = vacinaRepository;
         }
 
         public async Task<IActionResult> Index()
         {
             var hoje = DateTime.UtcNow.Date;
 
-            var totalTutores = await _db.Tutores.AsNoTracking().CountAsync();
-            var totalPets = await _db.Pets.AsNoTracking().CountAsync();
+            // Nota: Para otimização futura, adicionar métodos CountAsync nos repositórios.
+            var tutores = await _tutorRepository.ObterTodosAsync();
+            var pets = await _petRepository.ObterTodosAsync();
+            var vacinasAtrasadasLista = await _vacinaRepository.ObterAtrasadasAsync();
 
-            var totalVacinasAtrasadas = await _db.RegistrosVacinas
-                .AsNoTracking()
-                .CountAsync(v => v.ProximaDose < hoje);
-
-            var vacinasAtrasadas = await _db.RegistrosVacinas
-                .AsNoTracking()
-                .Where(v => v.ProximaDose < hoje)
-                .Include(v => v.Pet)
-                .ThenInclude(p => p!.Tutor)
-                .OrderBy(v => v.ProximaDose)
-                .Take(20)
+            var vacinasAtrasadasVm = vacinasAtrasadasLista
+                .Take(20) // Mantendo a lógica visual de limitar a 20
                 .Select(v => new VacinaAtrasadaVm
                 {
                     RegistroId = v.Id,
@@ -42,19 +38,19 @@ namespace PetCare.Web.Controllers
                     PetNome = v.Pet!.Nome,
                     TutorNome = v.Pet!.Tutor != null ? v.Pet!.Tutor.Nome : "-"
                 })
-                .ToListAsync();
+                .ToList();
 
-            foreach (var item in vacinasAtrasadas)
+            foreach (var item in vacinasAtrasadasVm)
             {
                 item.DiasAtraso = (hoje - item.ProximaDose.Date).Days;
             }
 
             var vm = new DashboardVm
             {
-                TotalTutores = totalTutores,
-                TotalPets = totalPets,
-                TotalVacinasAtrasadas = totalVacinasAtrasadas,
-                VacinasAtrasadas = vacinasAtrasadas
+                TotalTutores = tutores.Count,
+                TotalPets = pets.Count,
+                TotalVacinasAtrasadas = vacinasAtrasadasLista.Count,
+                VacinasAtrasadas = vacinasAtrasadasVm
             };
 
             return View(vm);

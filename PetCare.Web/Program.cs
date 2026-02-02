@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using PetCare.Web.Data;
-using PetCare.Web.Models;
+using PetCare.Infrastructure.Data;
+using PetCare.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +25,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<PetCare.Web.Services.VacinaService>();
+
+
+builder.Services.AddScoped<PetCare.Application.Interfaces.IAuthService, PetCare.Application.Services.AuthService>();
+builder.Services.AddScoped<PetCare.Application.Services.VacinaService>();
+
+builder.Services.AddScoped<PetCare.Domain.Interfaces.IUsuarioRepository, PetCare.Infrastructure.Repositories.UsuarioRepository>();
+builder.Services.AddScoped<PetCare.Domain.Interfaces.ITutorRepository, PetCare.Infrastructure.Repositories.TutorRepository>();
+builder.Services.AddScoped<PetCare.Domain.Interfaces.IPetRepository, PetCare.Infrastructure.Repositories.PetRepository>();
+builder.Services.AddScoped<PetCare.Domain.Interfaces.IVacinaRepository, PetCare.Infrastructure.Repositories.VacinaRepository>();
 
 var app = builder.Build();
 

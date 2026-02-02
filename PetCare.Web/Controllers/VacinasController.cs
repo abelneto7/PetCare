@@ -1,22 +1,24 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using PetCare.Web.Data;
-using PetCare.Web.Models;
-using PetCare.Web.Services;
+using PetCare.Application.Services;
+using PetCare.Domain.Entities;
+using PetCare.Domain.Enums;
+using PetCare.Domain.Interfaces;
 
 namespace PetCare.Web.Controllers
 {
     [Authorize]
     public class VacinasController : Controller
     {
-        private readonly AppDbContext _db;
+        private readonly IVacinaRepository _vacinaRepository;
+        private readonly IPetRepository _petRepository;
         private readonly VacinaService _vacinaService;
 
-        public VacinasController(AppDbContext db, VacinaService vacinaService)
+        public VacinasController(IVacinaRepository vacinaRepository, IPetRepository petRepository, VacinaService vacinaService)
         {
-            _db = db;
+            _vacinaRepository = vacinaRepository;
+            _petRepository = petRepository;
             _vacinaService = vacinaService;
         }
 
@@ -41,24 +43,23 @@ namespace PetCare.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Verifique os campos do formul·rio.";
+                TempData["Error"] = "Verifique os campos do formul√°rio.";
                 await CarregarPetsAsync(model.PetId);
                 return View(model);
             }
 
-            var petExiste = await _db.Pets.AnyAsync(p => p.Id == model.PetId);
+            var petExiste = await _petRepository.ExisteAsync(model.PetId);
             if (!petExiste)
             {
-                ModelState.AddModelError(nameof(RegistroVacina.PetId), "Selecione um pet v·lido.");
-                TempData["Error"] = "Verifique os campos do formul·rio.";
+                ModelState.AddModelError(nameof(RegistroVacina.PetId), "Selecione um pet v√°lido.");
+                TempData["Error"] = "Verifique os campos do formul√°rio.";
                 await CarregarPetsAsync(model.PetId);
                 return View(model);
             }
 
             model.ProximaDose = _vacinaService.CalcularProximaDose(model.DataAplicacao, model.IntervaloDias);
 
-            _db.RegistrosVacinas.Add(model);
-            await _db.SaveChangesAsync();
+            await _vacinaRepository.AdicionarAsync(model);
 
             TempData["Success"] = "Vacina registrada com sucesso.";
             return RedirectToAction(nameof(PorPet), new { id = model.PetId });
@@ -67,22 +68,15 @@ namespace PetCare.Web.Controllers
         [HttpGet("/pets/{id:int}/vacinas")]
         public async Task<IActionResult> PorPet(int id)
         {
-            var pet = await _db.Pets
-                .AsNoTracking()
-                .Include(p => p.Tutor)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var pet = await _petRepository.ObterPorIdAsync(id);
 
             if (pet == null)
             {
-                TempData["Error"] = "Pet n„o encontrado.";
+                TempData["Error"] = "Pet n√£o encontrado.";
                 return RedirectToAction("Index", "Pets");
             }
 
-            var vacinas = await _db.RegistrosVacinas
-                .AsNoTracking()
-                .Where(v => v.PetId == id)
-                .OrderByDescending(v => v.DataAplicacao)
-                .ToListAsync();
+            var vacinas = await _vacinaRepository.ObterPorPetAsync(id);
 
             var itens = vacinas.Select(v => new VacinaLinhaVm
             {
@@ -97,10 +91,10 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var vacina = await _db.RegistrosVacinas.FindAsync(id);
+            var vacina = await _vacinaRepository.ObterPorIdAsync(id);
             if (vacina == null)
             {
-                TempData["Error"] = "Registro de vacina n„o encontrado.";
+                TempData["Error"] = "Registro de vacina n√£o encontrado.";
                 return RedirectToAction("Index", "Pets");
             }
 
@@ -114,29 +108,29 @@ namespace PetCare.Web.Controllers
         {
             if (id != model.Id)
             {
-                TempData["Error"] = "RequisiÁ„o inv·lida.";
+                TempData["Error"] = "Requisi√ß√£o inv√°lida.";
                 return RedirectToAction("Index", "Pets");
             }
 
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Verifique os campos do formul·rio.";
+                TempData["Error"] = "Verifique os campos do formul√°rio.";
                 await CarregarPetsAsync(model.PetId);
                 return View(model);
             }
 
-            var vacina = await _db.RegistrosVacinas.FindAsync(id);
+            var vacina = await _vacinaRepository.ObterPorIdAsync(id);
             if (vacina == null)
             {
-                TempData["Error"] = "Registro de vacina n„o encontrado.";
+                TempData["Error"] = "Registro de vacina n√£o encontrado.";
                 return RedirectToAction("Index", "Pets");
             }
 
-            var petExiste = await _db.Pets.AnyAsync(p => p.Id == model.PetId);
+            var petExiste = await _petRepository.ExisteAsync(model.PetId);
             if (!petExiste)
             {
-                ModelState.AddModelError(nameof(RegistroVacina.PetId), "Selecione um pet v·lido.");
-                TempData["Error"] = "Verifique os campos do formul·rio.";
+                ModelState.AddModelError(nameof(RegistroVacina.PetId), "Selecione um pet v√°lido.");
+                TempData["Error"] = "Verifique os campos do formul√°rio.";
                 await CarregarPetsAsync(model.PetId);
                 return View(model);
             }
@@ -149,7 +143,7 @@ namespace PetCare.Web.Controllers
 
             vacina.ProximaDose = _vacinaService.CalcularProximaDose(vacina.DataAplicacao, vacina.IntervaloDias);
 
-            await _db.SaveChangesAsync();
+            await _vacinaRepository.AtualizarAsync(vacina);
 
             TempData["Success"] = "Registro de vacina atualizado com sucesso.";
             return RedirectToAction(nameof(PorPet), new { id = vacina.PetId });
@@ -158,15 +152,11 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var vacina = await _db.RegistrosVacinas
-                .AsNoTracking()
-                .Include(v => v.Pet)
-                .ThenInclude(p => p!.Tutor)
-                .FirstOrDefaultAsync(v => v.Id == id);
+            var vacina = await _vacinaRepository.ObterPorIdAsync(id);
 
             if (vacina == null)
             {
-                TempData["Error"] = "Registro de vacina n„o encontrado.";
+                TempData["Error"] = "Registro de vacina n√£o encontrado.";
                 return RedirectToAction("Index", "Pets");
             }
 
@@ -177,17 +167,16 @@ namespace PetCare.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var vacina = await _db.RegistrosVacinas.FindAsync(id);
+            var vacina = await _vacinaRepository.ObterPorIdAsync(id);
             if (vacina == null)
             {
-                TempData["Error"] = "Registro de vacina n„o encontrado.";
+                TempData["Error"] = "Registro de vacina n√£o encontrado.";
                 return RedirectToAction("Index", "Pets");
             }
 
             var petId = vacina.PetId;
 
-            _db.RegistrosVacinas.Remove(vacina);
-            await _db.SaveChangesAsync();
+            await _vacinaRepository.RemoverAsync(vacina);
 
             TempData["Success"] = "Registro de vacina removido com sucesso.";
             return RedirectToAction(nameof(PorPet), new { id = petId });
@@ -195,18 +184,18 @@ namespace PetCare.Web.Controllers
 
         private async Task CarregarPetsAsync(int? petSelecionado = null)
         {
-            var pets = await _db.Pets
-                .AsNoTracking()
-                .Include(p => p.Tutor)
-                .OrderBy(p => p.Nome)
+            var pets = await _petRepository.ObterTodosAsync();
+            
+            var lista = pets
                 .Select(p => new
                 {
                     p.Id,
-                    Texto = p.Tutor != null ? (p.Nome + " ó " + p.Tutor.Nome) : p.Nome
+                    Texto = p.Tutor != null ? (p.Nome + " - " + p.Tutor.Nome) : p.Nome
                 })
-                .ToListAsync();
+                .OrderBy(x => x.Texto)
+                .ToList();
 
-            ViewBag.Pets = new SelectList(pets, "Id", "Texto", petSelecionado);
+            ViewBag.Pets = new SelectList(lista, "Id", "Texto", petSelecionado);
         }
 
         public class VacinaLinhaVm

@@ -1,4 +1,4 @@
-Ôªø@model PetCare.Web.Models.Pet
+@model PetCare.Domain.Entities.Pet
 @using PetCare.Web.Helpers
 @{
     ViewData["Title"] = "Excluir pet";
@@ -7,7 +7,7 @@
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
         <h3 class="mb-1">Excluir pet</h3>
-        <div class="text-muted">Confirme a exclus√£o</div>
+        <div class="text-muted">Confirme a exclus„o</div>
     </div>
     <a class="btn btn-outline-secondary" asp-action="Index">Voltar</a>
 </div>
@@ -16,12 +16,12 @@
     <div class="card-body">
 
         <div class="alert alert-warning d-flex align-items-start gap-2 mb-4" role="alert">
-            <div class="fs-5">‚ö†Ô∏è</div>
+            <div class="fs-5">??</div>
             <div>
-                <div class="fw-semibold">Aten√ß√£o</div>
+                <div class="fw-semibold">AtenÁ„o</div>
                 <div>
-                    Voc√™ tem certeza que deseja excluir <strong>@Model.Nome</strong>?
-                    <span class="text-muted">Esta a√ß√£o n√£o pode ser desfeita.</span>
+                    VocÍ tem certeza que deseja excluir <strong>@Model.Nome</strong>?
+                    <span class="text-muted">Esta aÁ„o n„o pode ser desfeita.</span>
                 </div>
             </div>
         </div>
@@ -31,10 +31,10 @@
         </div>
 
         <dl class="row mb-4">
-            <dt class="col-sm-3 text-muted">Esp√©cie</dt>
+            <dt class="col-sm-3 text-muted">EspÈcie</dt>
             <dd class="col-sm-9">@Model.Especie.ToDisplay()</dd>
 
-            <dt class="col-sm-3 text-muted">Ra√ßa</dt>
+            <dt class="col-sm-3 text-muted">RaÁa</dt>
             <dd class="col-sm-9">@((string.IsNullOrWhiteSpace(Model.Raca)) ? "-" : Model.Raca)</dd>
 
             <dt class="col-sm-3 text-muted">Tutor</dt>

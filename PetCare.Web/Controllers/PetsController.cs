@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using PetCare.Web.Data;
-using PetCare.Web.Models;
+using PetCare.Domain.Entities;
+using PetCare.Domain.Enums;
+using PetCare.Domain.Interfaces;
 using PetCare.Web.Helpers;
 
 namespace PetCare.Web.Controllers
@@ -11,33 +11,18 @@ namespace PetCare.Web.Controllers
     [Authorize]
     public class PetsController : Controller
     {
-        private readonly AppDbContext _db;
+        private readonly IPetRepository _petRepository;
+        private readonly ITutorRepository _tutorRepository;
 
-        public PetsController(AppDbContext db)
+        public PetsController(IPetRepository petRepository, ITutorRepository tutorRepository)
         {
-            _db = db;
+            _petRepository = petRepository;
+            _tutorRepository = tutorRepository;
         }
 
         public async Task<IActionResult> Index(string? q)
         {
-            var query = _db.Pets
-                .AsNoTracking()
-                .Include(p => p.Tutor)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                q = q.Trim();
-                query = query.Where(p =>
-                    p.Nome.Contains(q) ||
-                    (p.Raca != null && p.Raca.Contains(q)) ||
-                    (p.Tutor != null && p.Tutor.Nome.Contains(q)));
-            }
-
-            var itens = await query
-                .OrderBy(p => p.Nome)
-                .ToListAsync();
-
+            var itens = await _petRepository.ObterTodosAsync(q);
             ViewBag.Query = q;
             return View(itens);
         }
@@ -55,22 +40,21 @@ namespace PetCare.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Verifique os campos do formulário.";
+                TempData["Error"] = "Verifique os campos do formulÃ¡rio.";
                 await CarregarCombosAsync(model.TutorId);
                 return View(model);
             }
 
-            var tutorExiste = await _db.Tutores.AnyAsync(t => t.Id == model.TutorId);
+            var tutorExiste = await _tutorRepository.ExisteAsync(model.TutorId);
             if (!tutorExiste)
             {
-                ModelState.AddModelError(nameof(Pet.TutorId), "Selecione um tutor válido.");
-                TempData["Error"] = "Verifique os campos do formulário.";
+                ModelState.AddModelError(nameof(Pet.TutorId), "Selecione um tutor vÃ¡lido.");
+                TempData["Error"] = "Verifique os campos do formulÃ¡rio.";
                 await CarregarCombosAsync(model.TutorId);
                 return View(model);
             }
 
-            _db.Pets.Add(model);
-            await _db.SaveChangesAsync();
+            await _petRepository.AdicionarAsync(model);
 
             TempData["Success"] = "Pet cadastrado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -79,10 +63,10 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var pet = await _db.Pets.FindAsync(id);
+            var pet = await _petRepository.ObterPorIdAsync(id);
             if (pet == null)
             {
-                TempData["Error"] = "Pet não encontrado.";
+                TempData["Error"] = "Pet nÃ£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -96,29 +80,29 @@ namespace PetCare.Web.Controllers
         {
             if (id != model.Id)
             {
-                TempData["Error"] = "Requisição inválida.";
+                TempData["Error"] = "RequisiÃ§Ã£o invÃ¡lida.";
                 return RedirectToAction(nameof(Index));
             }
 
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Verifique os campos do formulário.";
+                TempData["Error"] = "Verifique os campos do formulÃ¡rio.";
                 await CarregarCombosAsync(model.TutorId);
                 return View(model);
             }
 
-            var pet = await _db.Pets.FindAsync(id);
+            var pet = await _petRepository.ObterPorIdAsync(id);
             if (pet == null)
             {
-                TempData["Error"] = "Pet não encontrado.";
+                TempData["Error"] = "Pet nÃ£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
-            var tutorExiste = await _db.Tutores.AnyAsync(t => t.Id == model.TutorId);
+            var tutorExiste = await _tutorRepository.ExisteAsync(model.TutorId);
             if (!tutorExiste)
             {
-                ModelState.AddModelError(nameof(Pet.TutorId), "Selecione um tutor válido.");
-                TempData["Error"] = "Verifique os campos do formulário.";
+                ModelState.AddModelError(nameof(Pet.TutorId), "Selecione um tutor vÃ¡lido.");
+                TempData["Error"] = "Verifique os campos do formulÃ¡rio.";
                 await CarregarCombosAsync(model.TutorId);
                 return View(model);
             }
@@ -128,7 +112,7 @@ namespace PetCare.Web.Controllers
             pet.Raca = model.Raca;
             pet.TutorId = model.TutorId;
 
-            await _db.SaveChangesAsync();
+            await _petRepository.AtualizarAsync(pet);
 
             TempData["Success"] = "Pet atualizado com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -137,14 +121,11 @@ namespace PetCare.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var pet = await _db.Pets
-                .AsNoTracking()
-                .Include(p => p.Tutor)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var pet = await _petRepository.ObterPorIdAsync(id);
 
             if (pet == null)
             {
-                TempData["Error"] = "Pet não encontrado.";
+                TempData["Error"] = "Pet nÃ£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -155,15 +136,14 @@ namespace PetCare.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var pet = await _db.Pets.FindAsync(id);
+            var pet = await _petRepository.ObterPorIdAsync(id);
             if (pet == null)
             {
-                TempData["Error"] = "Pet não encontrado.";
+                TempData["Error"] = "Pet nÃ£o encontrado.";
                 return RedirectToAction(nameof(Index));
             }
 
-            _db.Pets.Remove(pet);
-            await _db.SaveChangesAsync();
+            await _petRepository.RemoverAsync(pet);
 
             TempData["Success"] = "Pet removido com sucesso.";
             return RedirectToAction(nameof(Index));
@@ -171,13 +151,14 @@ namespace PetCare.Web.Controllers
 
         private async Task CarregarCombosAsync(int? tutorSelecionado = null)
         {
-            var tutores = await _db.Tutores
-                .AsNoTracking()
+            var tutores = await _tutorRepository.ObterTodosAsync();
+
+            var lista = tutores
                 .OrderBy(t => t.Nome)
                 .Select(t => new { t.Id, t.Nome })
-                .ToListAsync();
+                .ToList();
 
-            ViewBag.Tutores = new SelectList(tutores, "Id", "Nome", tutorSelecionado);
+            ViewBag.Tutores = new SelectList(lista, "Id", "Nome", tutorSelecionado);
 
             var especies = Enum.GetValues(typeof(EspeciePet))
                 .Cast<EspeciePet>()

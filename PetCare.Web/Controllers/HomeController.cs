@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PetCare.Domain.Entities;
 using PetCare.Web.Models;
 
 namespace PetCare.Web.Controllers;

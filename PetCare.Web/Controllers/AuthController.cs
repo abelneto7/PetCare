@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using PetCare.Web.Data;
-using PetCare.Web.Models;
+using PetCare.Application.Interfaces;
+using PetCare.Domain.Entities;
 using System.Security.Claims;
 
 namespace PetCare.Web.Controllers
@@ -13,13 +11,11 @@ namespace PetCare.Web.Controllers
     [AllowAnonymous]
     public class AuthController : Controller
     {
-        private readonly AppDbContext _db;
-        private readonly IPasswordHasher<Usuario> _passwordHasher;
+        private readonly IAuthService _authService;
 
-        public AuthController(AppDbContext db, IPasswordHasher<Usuario> passwordHasher)
+        public AuthController(IAuthService authService)
         {
-            _db = db;
-            _passwordHasher = passwordHasher;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -41,29 +37,15 @@ namespace PetCare.Web.Controllers
                 return View();
             }
 
-            email = email.Trim().ToLowerInvariant();
+            var (sucesso, mensagem, usuario) = await _authService.RegisterAsync(nome, email, senha);
 
-            var existe = await _db.Usuarios.AnyAsync(u => u.Email == email);
-            if (existe)
+            if (!sucesso)
             {
-                ViewBag.Erro = "Já existe um usuário com este email.";
+                ViewBag.Erro = mensagem;
                 return View();
             }
 
-            var usuario = new Usuario
-            {
-                Nome = nome.Trim(),
-                Email = email,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null
-            };
-
-            usuario.Password = _passwordHasher.HashPassword(usuario, senha);
-
-            _db.Usuarios.Add(usuario);
-            await _db.SaveChangesAsync();
-
-            TempData["Success"] = "Conta criada com sucesso. Agora você pode entrar.";
+            TempData["Success"] = mensagem;
             return RedirectToAction(nameof(Login));
         }
 
@@ -86,19 +68,11 @@ namespace PetCare.Web.Controllers
                 return View();
             }
 
-            email = email.Trim().ToLowerInvariant();
+            var (sucesso, mensagem, usuario) = await _authService.LoginAsync(email, senha);
 
-            var usuario = await _db.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
-            if (usuario is null)
+            if (!sucesso || usuario == null)
             {
-                ViewBag.Erro = "Email ou senha inválidos.";
-                return View();
-            }
-
-            var result = _passwordHasher.VerifyHashedPassword(usuario, usuario.Password, senha);
-            if (result == PasswordVerificationResult.Failed)
-            {
-                ViewBag.Erro = "Email ou senha inválidos.";
+                ViewBag.Erro = mensagem;
                 return View();
             }
 
@@ -121,7 +95,7 @@ namespace PetCare.Web.Controllers
                     IssuedUtc = DateTimeOffset.UtcNow
                 });
 
-            TempData["Success"] = $"Bem-vindo, {usuario.Nome}!";
+            TempData["Success"] = mensagem;
             return RedirectToAction("Index", "Dashboard");
         }
 
@@ -131,7 +105,7 @@ namespace PetCare.Web.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            TempData["Info"] = "Você saiu do sistema.";
+            TempData["Info"] = "VocÃª saiu do sistema.";
             return RedirectToAction(nameof(Login));
         }
     }
