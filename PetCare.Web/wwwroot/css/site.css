@@ -24,7 +24,6 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color);
 }
 
-/* Navbar Styling */
 .navbar {
     background-color: var(--card-bg) !important;
     box-shadow: var(--shadow-sm);
@@ -47,7 +46,6 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color) !important;
 }
 
-/* Card Styling */
 .card {
     border: none;
     border-radius: var(--border-radius);
@@ -60,7 +58,6 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: var(--shadow-md);
 }
 
-/* Buttons */
 .btn {
     border-radius: 6px;
     font-weight: 500;
@@ -94,7 +91,6 @@ h1, h2, h3, h4, h5, h6 {
     border-color: #dae0e5;
 }
 
-/* Table Styling */
 .table thead th {
     border-bottom: 2px solid #edf2f7;
     color: var(--secondary-color);
@@ -109,14 +105,12 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-color);
 }
 
-/* Badges */
 .badge {
     font-weight: 500;
     padding: 0.5em 0.75em;
     border-radius: 4px;
 }
 
-/* Footer */
 footer.footer {
     background-color: var(--card-bg);
     border-top: 1px solid #edf2f7;
@@ -124,11 +118,9 @@ footer.footer {
     color: var(--secondary-color);
 }
 
-/* Utility */
 .fs-3 { font-weight: 300; }
 .fw-semibold { font-weight: 600 !important; }
 
-/* Dashboard Specific Icons */
 .dashboard-icon {
     font-size: 2rem;
     opacity: 0.2;
