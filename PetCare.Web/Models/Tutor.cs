@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PetCare.Web.Models
 {
-    public class Tutor
+    public class Tutor : BaseEntity
     {
         public int Id { get; set; }
 

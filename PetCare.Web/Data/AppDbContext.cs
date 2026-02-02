@@ -10,8 +10,8 @@ namespace PetCare.Web.Data
         }
 
         public DbSet<Usuario> Usuarios => Set<Usuario>();
-
         public DbSet<Tutor> Tutores => Set<Tutor>();
+        public DbSet<Pet> Pets => Set<Pet>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,64 @@ namespace PetCare.Web.Data
                 entity.Property(u => u.CreatedAt).IsRequired();
                 entity.Property(u => u.UpdatedAt).IsRequired(false);
             });
+
+            modelBuilder.Entity<Tutor>(entity =>
+            {
+                entity.Property(t => t.Nome).IsRequired().HasMaxLength(150);
+                entity.Property(t => t.Telefone).IsRequired().HasMaxLength(20);
+                entity.Property(t => t.Email).HasMaxLength(200);
+                entity.Property(t => t.Endereco).HasMaxLength(300);
+
+                entity.Property(t => t.CreatedAt).IsRequired();
+                entity.Property(t => t.UpdatedAt).IsRequired(false);
+            });
+
+            modelBuilder.Entity<Pet>(entity =>
+            {
+                entity.Property(p => p.Nome).IsRequired().HasMaxLength(150);
+                entity.Property(p => p.Raca).HasMaxLength(150);
+
+                entity.Property(p => p.Especie).IsRequired();
+
+                entity.Property(p => p.CreatedAt).IsRequired();
+                entity.Property(p => p.UpdatedAt).IsRequired(false);
+
+                entity.HasOne(p => p.Tutor)
+                      .WithMany()
+                      .HasForeignKey(p => p.TutorId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
+
+        public override int SaveChanges()
+        {
+            ApplyAudit();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ApplyAudit();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void ApplyAudit()
+        {
+            var now = DateTime.UtcNow;
+
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = now;
+                    entry.Entity.UpdatedAt = null;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = now;
+                    entry.Property(e => e.CreatedAt).IsModified = false;
+                }
+            }
         }
     }
 }

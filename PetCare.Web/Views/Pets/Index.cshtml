@@ -1,0 +1,68 @@
+@model List<PetCare.Web.Models.Pet>
+    @using PetCare.Web.Helpers
+    @{
+    ViewData["Title"] = "Pets";
+    var q = (string?)ViewBag.Query;
+    }
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h3 class="mb-1">Pets</h3>
+            <div class="text-muted">Gerencie os pets cadastrados</div>
+        </div>
+        <a class="btn btn-dark" asp-action="Create">Novo pet</a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-12 col-md-9">
+                    <label class="form-label">Buscar</label>
+                    <input class="form-control" name="q" value="@q" placeholder="Nome do pet, raça ou tutor..." />
+                </div>
+                <div class="col-12 col-md-3 d-grid">
+                    <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            @if (Model.Count == 0)
+        {
+            <div class="text-muted">Nenhum pet cadastrado.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr class="text-muted">
+                            <th>Nome</th>
+                            <th>Espécie</th>
+                            <th>Raça</th>
+                            <th>Tutor</th>
+                            <th class="text-end" style="width: 180px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <td class="fw-semibold">@item.Nome</td>
+                            <td>@item.Especie.ToDisplay()</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.Raca) ? "-" : item.Raca)</td>
+                            <td>@(item.Tutor?.Nome ?? "-")</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        </div>
+    </div>

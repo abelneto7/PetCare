@@ -1,0 +1,63 @@
+@model PetCare.Web.Models.Pet
+@{
+    ViewData["Title"] = "Editar pet";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h3 class="mb-1">Editar pet</h3>
+        <div class="text-muted">Atualize os dados do pet</div>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">Voltar</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+            <div class="alert alert-danger py-2" role="alert">
+                @Html.ValidationSummary(excludePropertyErrors: true)
+            </div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label">Nome do pet</label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Espécie</label>
+                <select asp-for="Especie" class="form-select" asp-items="(IEnumerable<SelectListItem>)ViewBag.Especies"></select>
+                <span asp-validation-for="Especie" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Raça (opcional)</label>
+                <input asp-for="Raca" class="form-control" />
+                <span asp-validation-for="Raca" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tutor</label>
+                <select asp-for="TutorId" class="form-select" asp-items="(SelectList)ViewBag.Tutores">
+                    <option value="">Selecione...</option>
+                </select>
+                <span asp-validation-for="TutorId" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid d-md-flex gap-2">
+                <button type="submit" class="btn btn-dark">Salvar</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
